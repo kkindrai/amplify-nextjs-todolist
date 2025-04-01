@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react"
 
 export default function locationFinderClient() { 
-    const [locationInfo, setLocationInfo] = useState({City: 'N/A', RegionCode: 'N/A'}) // USE STATE USES ARRAY, NOT {} 
+    const [locationInfo, setLocationInfo] = useState({City: 'N/A'}) // USE STATE USES ARRAY, NOT {} 
                             // && useState(null) null instead of {} to have an unavailable message status
 
     const getLocationInfo = async () => {
@@ -31,7 +31,7 @@ export default function locationFinderClient() {
 
                     {/* If locationInfo ==> */}
                     {locationInfo 
-                        ? <h2><code>{locationInfo.City}, {locationInfo.RegionCode}</code></h2> 
+                        ? <h2><code>{locationInfo.City}, </code></h2> 
                         : <h2>Location Data Currently Unavailable.</h2>
                     }
                     
