@@ -4,17 +4,15 @@
 import { useEffect, useState } from "react"
 
 export default function locationFinderClient() { 
-    const [locationInfo, setLocationInfo] = useState({}) // USE STATE USES ARRAY, NOT {}
+    const [locationInfo, setLocationInfo] = useState(null) // USE STATE USES ARRAY, NOT {} 
+                            // && useState(null) null instead of {} to have an unavailable message status
 
     const getLocationInfo = async () => {
         const response = await fetch('https://apip.cc/json');
-
-        console.log(response);
-
         const locationData = await response.json();
-
         console.log(locationData);
 
+        // Set the Data
         setLocationInfo(locationData);
     }
 
@@ -30,7 +28,13 @@ export default function locationFinderClient() {
                     <h1>Location Finder (Client)</h1>
                 </div>
                 <div className="card-body">
-                    <h2><code>{locationInfo?.City}, {locationInfo?.RegionCode}</code></h2>
+
+                    {/* If locationInfo ==> */}
+                    {locationInfo 
+                        ? <h2><code>{locationInfo?.City}, {locationInfo?.RegionCode}</code></h2> 
+                        : <h2>Location Data Currently Unavailable.</h2>
+                    }
+                    
                 </div>
             </div>
         </>

@@ -15,6 +15,11 @@ export default function App() {
   return (
     <main>
       
+        <p>
+          Note: The one from the client will flash, whereas the one on the server 
+          is loaded with the rest of the site, making it load instantly.
+        </p>
+
         {/* Server Component */}
         <LocationFinderServer />
 

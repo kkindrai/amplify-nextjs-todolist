@@ -1,27 +1,16 @@
-'use client';
 
 // Import the Packages
-import { useEffect, useState } from "react"
 
-export default function locationFinderServer() { 
-    const [locationInfo, setLocationInfo] = useState({}) // USE STATE USES ARRAY, NOT {}
 
-    const getLocationInfo = async () => {
+export default async function locationFinderServer() { // maKE THIS A ASYNC FUNCTION
+
+
         const response = await fetch('https://apip.cc/json');
-
-        console.log(response);
-
         const locationData = await response.json();
-
         console.log(locationData);
-
-        setLocationInfo(locationData);
-    }
+        const locationInfo = locationData;
 
 
-    useEffect(() => {
-        getLocationInfo();
-    }, []) // make sure to add this array <-- ensures api is only called once
 
     return (
         <>
