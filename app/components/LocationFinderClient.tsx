@@ -41,15 +41,22 @@ export default function locationFinderClient() {
 
     // GETTING WEATHER DATA
     ///////////////////////////////////////////////////////
-    const [weatherInfo, setWeatherInfo] = useState(
-        {"product" : 'undefined'}
-    ) // USE STATE USES ARRAY, NOT {} 
+    // const [weatherInfo, setWeatherInfo] = useState(
+    //     {
+    //         "product" : 'undefined',
+    //         "dataseries" : [
+                
+    //         ]
+    //     }
+    // ) // USE STATE USES ARRAY, NOT {} 
+
+    const [tempInfo, setTempInfo] = useState('unavailable');
 
     // Creating a state for Loading
     const [isLoading, setIsLoading] = useState(true);
 
 
-    const getWeatherInfo = async (latitude: string | undefined, longitude: string | undefined) => {
+    const getWeatherInfo = async (latitude?: string | undefined, longitude?: string | undefined) => {
         
         // If Location's Long & Lat != 'undefined'
         if(latitude != undefined && longitude != undefined) {
@@ -70,7 +77,7 @@ export default function locationFinderClient() {
             console.log(weatherData);
 
             // Set the Data
-            setWeatherInfo(weatherData);
+            setTempInfo(weatherData?.dataseries[0]?.temp2m);
             setIsLoading(false);
         }
     }
@@ -94,7 +101,7 @@ export default function locationFinderClient() {
                 <li>
                     Weather Data:
                     <ul>
-                        <li>Temperature: {isLoading ? <LoadingSpinner /> : <span>{weatherInfo.dataseries[0].temp2m}° C</span>}</li>
+                        <li>Temperature: {isLoading ? <LoadingSpinner /> : <span>{tempInfo}° C</span>}</li>
                     </ul>
                 </li>
             </ul>
