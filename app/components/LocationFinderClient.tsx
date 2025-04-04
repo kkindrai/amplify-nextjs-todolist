@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react"
 import LoadingSpinner from "./LoadingSpinner";
 
-export default function locationFinderClient() { 
+export default async function locationFinderClient() { 
     
     // GETTING LOCATION
     ///////////////////////////////////////////////////////
@@ -20,20 +20,19 @@ export default function locationFinderClient() {
 
 
     const getLocationInfo = async () => {
-        const response = await fetch('https://apip.cc/json');
-        const locationData = await response.json();
-        console.log(locationData);
+        try {
+            const response = await fetch('https://apip.cc/json');
+            const locationData = await response.json();
+            console.log(locationData);
 
-        // Set the Data
-        setLocationInfo(locationData);
+            // Set the Data
+            setLocationInfo(locationData);
 
-        // Call get weather data
-        getWeatherInfo(locationData.Latitude, locationData.Longitude);
+        }catch(error) {
+            console.error('first request failed', error)
+        
     }
 
-    useEffect(() => {
-        getLocationInfo();
-    }, []) // make sure to add this array <-- ensures api is only called once
 
 
 
@@ -69,21 +68,27 @@ export default function locationFinderClient() {
                 + "&ac=0&unit=metric&output=json&tzshift=0";
 
             console.log(url);
+            try {
 
+                // Call the API
+                const response = await fetch(url);
+                const weatherData = await response.json();
+                console.log(weatherData);
 
-            // Call the API
-            const response = await fetch(url);
-            const weatherData = await response.json();
-            console.log(weatherData);
+                // Set the Data
+                setTempInfo(weatherData?.dataseries[0]?.temp2m);
+                setIsLoading(false);
+            }catch(error) {
+                console.error('second request failed', error)
+                setIsLoading(false);
+            }
 
-            // Set the Data
-            setTempInfo(weatherData?.dataseries[0]?.temp2m);
-            setIsLoading(false);
         }
     }
 
     useEffect(() => {
-        getWeatherInfo();
+        await getLocationInfo();
+        await getWeatherInfo(locationInfo.Latitude, locationInfo.Longitude);
     }, []) // make sure to add this array <-- ensures api is only called once
 
 
