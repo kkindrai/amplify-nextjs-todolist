@@ -4,112 +4,85 @@
 import { useEffect, useState } from "react"
 import LoadingSpinner from "./LoadingSpinner";
 
-export default async function locationFinderClient() { 
+export default function locationFinderClient() { 
     
-    // GETTING LOCATION
-    ///////////////////////////////////////////////////////
-    const [locationInfo, setLocationInfo] = useState(
-        {
-            "City"          : 'unavailable',
-            "RegionName"    : 'unavailable',
-            "CountryName"   : 'unavailable',
-            "Latitude"       : 'unavailable',
-            "Longitude"      : 'unavailable',
-        }
-    ) // USE STATE USES ARRAY, NOT {} 
+    // The Data States
+    // -City, RegionName, CountryName, Longitude, Latitude, Temp
+    const [city, setCity]           = useState('');
+    const [region, setRegion]       = useState('');
+    const [country, setCountry]     = useState('');
+    const [temp, setTemp]         = useState('');
+    const [isLoading, setIsLoading]  = useState(true);
 
 
-    const getLocationInfo = async () => {
+    // ////////////////////////////////////////////////////
+    // Calling the APIs
+    const getAPIData = async () => {
         try {
-            const response = await fetch('https://apip.cc/json');
-            const locationData = await response.json();
-            console.log(locationData);
+            // Call first API
+            const response01 = await fetch('https://apip.cc/json');
+            const locationData = await response01.json();
 
-            // Set the Data
-            setLocationInfo(locationData);
-
-        }catch(error) {
-            console.error('first request failed', error)
-        
-    }
+            // Set the Data from this return
+            setCity(locationData?.City);
+            setRegion(locationData?.RegionName);
+            setCountry(locationData?.CountryName);
 
 
-
-
-
-
-    // GETTING WEATHER DATA
-    ///////////////////////////////////////////////////////
-    // const [weatherInfo, setWeatherInfo] = useState(
-    //     {
-    //         "product" : 'undefined',
-    //         "dataseries" : [
-                
-    //         ]
-    //     }
-    // ) // USE STATE USES ARRAY, NOT {} 
-
-    const [tempInfo, setTempInfo] = useState('unavailable');
-
-    // Creating a state for Loading
-    const [isLoading, setIsLoading] = useState(true);
-
-
-    const getWeatherInfo = async (latitude?: string | undefined, longitude?: string | undefined) => {
-        
-        // If Location's Long & Lat != 'undefined'
-        if(latitude != undefined && longitude != undefined) {
-
-            // Create the API URL
+            // Call Second API Using the lat & long values
             const url = "https://www.7timer.info/bin/astro.php?lon="
-                + longitude
+                + locationData?.Longitude
                 + "&lat="
-                + latitude
+                + locationData?.Latitude
                 + "&ac=0&unit=metric&output=json&tzshift=0";
 
-            console.log(url);
-            try {
+                console.log(url);
 
-                // Call the API
-                const response = await fetch(url);
-                const weatherData = await response.json();
-                console.log(weatherData);
+            const response02 = await fetch(url);
+            const weatherData = await response02.json();
 
-                // Set the Data
-                setTempInfo(weatherData?.dataseries[0]?.temp2m);
-                setIsLoading(false);
-            }catch(error) {
-                console.error('second request failed', error)
-                setIsLoading(false);
-            }
+            // Set the Data from this return
+            setTemp(weatherData?.dataseries[0]?.temp2m);
 
-        }
+            // Disable isLoading
+            setIsLoading(false);
+
+        } catch(error) {
+        console.error(error);
     }
+};
 
     useEffect(() => {
-        await getLocationInfo();
-        await getWeatherInfo(locationInfo.Latitude, locationInfo.Longitude);
-    }, []) // make sure to add this array <-- ensures api is only called once
 
+        getAPIData();
+  
+    }, []); // make sure to add this array <-- ensures api is only called once
 
     return (
         <>
             <h1>Location Finder (Client)</h1>
             <ul>
-                <li>
-                    Region Data:
-                    <ul>
-                        <li>{locationInfo.City}, {locationInfo.RegionName}</li>
-                        <li>{locationInfo.CountryName}</li>
-                    </ul>
-                </li>
-                <li>
-                    Weather Data:
-                    <ul>
-                        <li>Temperature: {isLoading ? <LoadingSpinner /> : <span>{tempInfo}° C</span>}</li>
-                    </ul>
-                </li>
+                {isLoading ? (
+                    <li><LoadingSpinner /></li>
+                ) : (
+                    <>
+                        <li>
+                            Region Data:
+                            <ul>
+                                <li>{city}, {region}</li>
+                                <li>{country}</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Weather Data:
+                            <ul>
+                                <li>Temperature: <span>{temp}° C</span></li>
+                            </ul>
+                        </li>
+                    </>
+                )}
             </ul>
+
                               
         </>
     )
